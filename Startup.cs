@@ -1,5 +1,7 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+//
+// Generated with EchoBot .NET Template version v4.9.1
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,11 +9,11 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-using Microsoft.BotBuilderSamples.Bots;
 using Microsoft.Extensions.Hosting;
 
-namespace Microsoft.BotBuilderSamples
+using bankChatBot.Bots;
+
+namespace bankChatBot
 {
     public class Startup
     {

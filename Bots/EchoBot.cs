@@ -1,5 +1,7 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+//
+// Generated with EchoBot .NET Template version v4.9.1
 
 using System.Collections.Generic;
 using System.Threading;
@@ -7,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.BotBuilderSamples.Bots
+namespace bankChatBot.Bots
 {
     public class EchoBot : ActivityHandler
     {
@@ -32,7 +34,7 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            var welcomeText = "Olá e bem vindo!";
+            var welcomeText = "Olá, bem vindo!";
             foreach (var member in membersAdded)
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
