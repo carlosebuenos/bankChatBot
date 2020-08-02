@@ -36,6 +36,7 @@ namespace bankChatBot
             // (Memory is great for testing purposes - examples of implementing storage with
             // Azure Blob Storage or Cosmos DB are below).
             var storage = new MemoryStorage();
+            services.AddSingleton(storage);
 
             // Create the User state passing in the storage layer.
             var userState = new UserState(storage);

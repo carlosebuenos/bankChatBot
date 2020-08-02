@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
@@ -17,10 +18,13 @@ namespace bankChatBot.Bots
         private BotState _conversationState;
         private BotState _userState;
 
-        public StateManagementBot(ConversationState conversationState, UserState userState)
+        private MemoryStorage _storage;
+
+        public StateManagementBot(ConversationState conversationState, UserState userState, MemoryStorage storage)
         {
             _conversationState = conversationState;
             _userState = userState;
+            _storage = storage;
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -83,6 +87,81 @@ namespace bankChatBot.Bots
                 await turnContext.SendActivityAsync($"{userProfile.Name} enviou: {turnContext.Activity.Text}");
                 await turnContext.SendActivityAsync($"Recebido em: {conversationData.Timestamp}");
                 await turnContext.SendActivityAsync($"Origem da mensagem: {conversationData.ChannelId}");
+            }
+
+
+            // preserve user input.
+            var utterance = turnContext.Activity.Text;
+            // make empty local logitems list.
+            UtteranceLog logItems = null;
+
+            // see if there are previous messages saved in storage.
+            try
+            {
+                string[] utteranceList = { "UtteranceLog" };
+                logItems = _storage.ReadAsync<UtteranceLog>(utteranceList).Result?.FirstOrDefault().Value;
+            }
+            catch
+            {
+                // Inform the user an error occured.
+                await turnContext.SendActivityAsync("Desculpe, algo de errado ocorreu ao ler as mensagens armazenadas!");
+            }
+
+            // If no stored messages were found, create and store a new entry.
+            if (logItems is null)
+            {
+                // add the current utterance to a new object.
+                logItems = new UtteranceLog();
+                logItems.UtteranceList.Add(utterance);
+                // set initial turn counter to 1.
+                logItems.TurnNumber++;
+
+                // Show user new user message.
+                await turnContext.SendActivityAsync($"{logItems.TurnNumber}: A lista agora é: {string.Join(", ", logItems.UtteranceList)}");
+
+                // Create Dictionary object to hold received user messages.
+                var changes = new Dictionary<string, object>();
+                {
+                    changes.Add("UtteranceLog", logItems);
+                }
+                try
+                {
+                    // Save the user message to your Storage.
+                    await _storage.WriteAsync(changes, cancellationToken);
+                }
+                catch
+                {
+                    // Inform the user an error occured.
+                    await turnContext.SendActivityAsync("Desculpe, algo de errado ocorreu ao armazenar as mensagens!");
+                }
+            }
+            // Else, our Storage already contained saved user messages, add new one to the list.
+            else
+            {
+                // add new message to list of messages to display.
+                logItems.UtteranceList.Add(utterance);
+                // increment turn counter.
+                logItems.TurnNumber++;
+
+                // show user new list of saved messages.
+                await turnContext.SendActivityAsync($"{logItems.TurnNumber}: A lista agora é: {string.Join(", ", logItems.UtteranceList)}");
+
+                // Create Dictionary object to hold new list of messages.
+                var changes = new Dictionary<string, object>();
+                {
+                    changes.Add("UtteranceLog", logItems);
+                };
+
+                try
+                {
+                    // Save new list to your Storage.
+                    await _storage.WriteAsync(changes,cancellationToken);
+                }
+                catch
+                {
+                    // Inform the user an error occured.
+                    await turnContext.SendActivityAsync("Desculpe, algo de errado ocorreu ao armazenar as mensagens!");
+                }
             }
         }
     }
