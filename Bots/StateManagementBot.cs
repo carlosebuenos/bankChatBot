@@ -18,9 +18,9 @@ namespace bankChatBot.Bots
         private BotState _conversationState;
         private BotState _userState;
 
-        private MemoryStorage _storage;
+        private IStorage _storage;
 
-        public StateManagementBot(ConversationState conversationState, UserState userState, MemoryStorage storage)
+        public StateManagementBot(ConversationState conversationState, UserState userState, IStorage storage)
         {
             _conversationState = conversationState;
             _userState = userState;
@@ -88,7 +88,6 @@ namespace bankChatBot.Bots
                 await turnContext.SendActivityAsync($"Recebido em: {conversationData.Timestamp}");
                 await turnContext.SendActivityAsync($"Origem da mensagem: {conversationData.ChannelId}");
             }
-
 
             // preserve user input.
             var utterance = turnContext.Activity.Text;
