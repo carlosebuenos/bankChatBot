@@ -1,5 +1,7 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+//
+// Generated with EchoBot .NET Template version v4.9.1
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,11 +9,13 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-using Microsoft.BotBuilderSamples.Bots;
 using Microsoft.Extensions.Hosting;
 
-namespace Microsoft.BotBuilderSamples
+using bankChatBot.Bots;
+using bankChatBot.Dialogs;
+using bankChatBot.Recognizers;
+
+namespace bankChatBot
 {
     public class Startup
     {
@@ -30,8 +34,23 @@ namespace Microsoft.BotBuilderSamples
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
+            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
+            services.AddSingleton<IStorage, MemoryStorage>();
+
+            // Create the User state.
+            services.AddSingleton<UserState>();
+
+            // Create the Conversation state.
+            services.AddSingleton<ConversationState>();
+
+            // Register LUIS recognizer
+            services.AddSingleton<BankConversationRecognizer>();
+
+            // The Dialog that will be run by the bot.
+            services.AddSingleton<BankDialog>();
+
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, EchoBot>();
+            services.AddTransient<IBot, BankBot<BankDialog>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
