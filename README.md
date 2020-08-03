@@ -37,3 +37,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Launch Bot Framework Emulator
 - File -> Open Bot
 - Enter a Bot URL of `http://localhost:3978/api/messages`
+
+## Telegram
+
+Call @carlosebuenosBancoCarrefourBot
